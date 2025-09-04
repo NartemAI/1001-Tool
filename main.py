@@ -1,4 +1,4 @@
-import functions_all
+import functions
 from os import system
 name_functions = {0: "Список программ", 1: "Монетка"}
 kol_functions = len(name_functions)
@@ -17,4 +17,5 @@ while True:
             functions_all.coin_flip()
         case _:
             print("Такой программы нет!🤷")
+
 
