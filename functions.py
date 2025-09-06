@@ -1,8 +1,11 @@
+#functions
+import math
 import random
 import os
-import math
-
-
+import time
+import socket
+import subprocess
+import platform
 def coin_flip():
     print("Программа подбрасывания монетки")
     z = "0"  # знак для выхода
@@ -272,5 +275,170 @@ def generate_login():
             login += "".join(random.choice(digits) for _ in range(num_digits))
 
         print("\nСгенерированный логин:", login)
+    else:
+        return
+
+
+def random_number():
+    print("Генератор случайных чисел")
+    exit_code = "0"
+
+    while True:
+        user_input = input("Введите диапазон (например: 1-100) или 0 для выхода: ")
+
+        if user_input == exit_code:
+            break
+
+        if '-' in user_input:
+            start, end = map(int, user_input.split('-'))
+            result = random.randint(start, end)
+            print(f"Случайное число: {result}")
+        else:
+            print("Неверный формат! Используйте: начало-конец")
+
+    return
+
+def torque_calculator():
+    print("Калькулятор крутящего момента (Введите 0 для выхода) ")
+    z = (0)  # знак для выхода
+
+    while True:
+        print(
+            "\nКрутящий момент будет рассчитываться по Лошадиным силам (мощность), оборотам двигателя и передаточному числу + редуктор\n")
+
+        # Ввод мощности
+        hp = float(input("Введите мощность двигателя в лошадиных силах: "))
+        if hp == z:
+            break
+        kw = hp * 0.7355  # перевод в кВт
+
+        # Обороты для расчёта
+        n_values = [1000, 2000, 3000, 4000, 5000, 6000]
+
+        # Ввод передаточных чисел
+        gear1 = float(input("Введите передаточное число для 1 передачи (*ваше число* : 1): "))
+        if gear1 == z:
+            break
+        r = float(input("Введите передаточное число для редуктора (*ваше число* : 1): "))
+        if r == z:
+            break
+        eta = float(input("Введите общее кпд для трансмиссии и редуктора (Для максимального реализма рекомендуется значение 0.93): "))
+        if eta == z:
+            break
+
+        # Убывающий ряд передач (нормализованный относительно первой передачи)
+        gear_multipliers = [1.0, 0.64, 0.43, 0.34, 0.26, 0.20, 0.16, 0.13]
+        gear_values = [gear1 * m for m in gear_multipliers]
+
+        print("\nРассчёт, подождите секундочку...\n")
+
+        # Вывод по каждой передаче
+        for i, g in enumerate(gear_values, start=1):
+            print(f"\n{i} передача (gear = {g:.3f} : 1):")
+            time.sleep(1)
+            for n in n_values:
+                # Момент на коленвале по формуле: M = P * 9550 / n
+                torque_engine = (kw * 9550) / n
+                # Момент на колёсах с учётом передачи, редуктора и КПД
+                torque_wheel = torque_engine * g * r * eta
+                if torque_wheel <= 5000:
+                    print(f"{n} об/мин → момент на коленвале: {torque_engine:.2f} Н·м, на колёсах: {torque_wheel:.2f} Н·м")
+                    time.sleep(0.2)
+                elif torque_wheel <= 8500:
+                    print(
+                        f"{n} об/мин → момент на коленвале: {torque_engine:.2f} Н·м, на колёсах: {torque_wheel:.2f} Н·м \nПРОБУКСОВКА КОЛЕС! БОЛЬШОЙ МОМЕНТ!")
+                    time.sleep(0.2)
+                elif torque_wheel <= 10000:
+                    print(
+                        f"{n} об/мин → момент на коленвале: {torque_engine:.2f} Н·м, на колёсах: {torque_wheel:.2f} Н·м \nПРОБУКСОВКА СЦЕПЛЕНИЯ! СЛИШОМ БОЛЬШОЙ МОМЕНТ!ЧЕРЕЗ ВРЕМЯ ПРИВОДИТ К ПОЛОМКАМ!")
+                    time.sleep(0.2)
+                elif torque_wheel <= 15000:
+                    print(
+                        f"{n} об/мин → момент на коленвале: {torque_engine:.2f} Н·м, на колёсах: {torque_wheel:.2f} Н·м \nПОЛОМКА ШЕСТЕРНЕЙ КОРОБКИ ПЕРЕДАЧ! ВЫЖЕГАНИЕ СЦЕПЛЕНИЯ! СЛИШОМ БОЛЬШОЙ МОМЕНТ! ДВИЖЕНИЕ ЗАТРУДНЕНО!")
+                    time.sleep(0.2)
+                elif torque_wheel <= 20000:
+                    print(
+                        f"{n} об/мин → момент на коленвале: {torque_engine:.2f} Н·м, на колёсах: {torque_wheel:.2f} Н·м \nМНГНОВЕННАЯ ПОЛОМКА КОРОБКИ ПЕРЕДАЧ! МНГНОВЕННАЯ ПОЛОМКА СЦЕПЛЕНИЯ! СЛИШОМ БОЛЬШОЙ МОМЕНТ! ДВИЖЕНИЕ НЕВОЗМОЖНО!")
+                    time.sleep(0.2)
+                elif torque_wheel >= 20000:
+                    print(
+                        f"{n} об/мин → момент на коленвале: {torque_engine:.2f} Н·м, на колёсах: {torque_wheel:.2f} Н·м \nВЗРЫВ КОРОБКИ ПЕРЕДАЧ! РАЗРЫВ КАРДАНОВ! ВЕРОЯТНЫ НЕПРЕДВИДЕННЫЕ УЧЕНЫМИ ПОЛОМКИ! НЕРЕАЛИСТИЧНО БОЛЬШОЙ МОМЕНТ! ДВИЖЕНИЕ НЕРЕАЛЬНО!")
+                    time.sleep(0.2)
+    else:
+        return
+
+def ip_check():
+    import socket
+    import subprocess
+    import platform
+
+    print("\nIP checker (Введите 0 для выхода) ")
+    z = "0"  # знак для выхода
+    start = input("Нажмите Enter для вывода информации о подключении ")
+    while True:
+        if start == z:
+            break
+        print()
+
+        def get_local_ip():
+            """Получаем локальный IP через сокеты"""
+            try:
+                s = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+                s.connect(("8.8.8.8", 80))  # Google DNS
+                local_ip = s.getsockname()[0]
+                s.close()
+                return local_ip
+            except:
+                return "Не удалось определить локальный IP"
+
+        def get_ip_system_command():
+            """Получаем IP через системные команды"""
+            system = platform.system()
+            try:
+                if system == "Windows":
+                    result = subprocess.run(['ipconfig'], capture_output=True, text=True, encoding='cp866')
+                    output = result.stdout
+                    lines = output.split('\n')
+                    for line in lines:
+                        if 'IPv4' in line or 'Адаптер' in line:
+                            if ':' in line and '.' in line:
+                                return line.split(':')[-1].strip()
+                elif system in ["Linux", "Darwin"]:
+                    result = subprocess.run(['hostname', '-I'], capture_output=True, text=True)
+                    return result.stdout.strip()
+                return "Не удалось определить IP через команду"
+            except Exception as e:
+                return f"Ошибка выполнения команды: {e}"
+
+        def get_network_info_complete():
+            """Собираем полную информацию о сети"""
+            hostname = socket.gethostname()
+            local_ip = get_local_ip()
+            system_ip = get_ip_system_command()
+            return {
+                'hostname': hostname,
+                'local_ip_socket': local_ip,
+                'system_ip_command': system_ip,
+                'platform': platform.platform(),
+                'system': platform.system()
+            }
+
+        # **Прямой вызов функций**
+        print("=" * 60)
+        print("ПОЛУЧЕНИЕ IP АДРЕСА")
+        print("=" * 60)
+
+        info = get_network_info_complete()
+
+        print(f"Операционная система: {info['system']}")
+        print(f"Платформа: {info['platform']}")
+        print(f"Имя компьютера: {info['hostname']}")
+        print(f"Локальный IP (wifi): {info['local_ip_socket']}")
+        print(f"IP из системной команды: {info['system_ip_command']}")
+
+        print("=" * 60)
+        final = input("Для повторной проверки нажмите Enter или 0 для выхода: ")
+        if final == z:
+            break
     else:
         return
