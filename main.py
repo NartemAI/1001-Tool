@@ -1,107 +1,87 @@
 import functions
 
-# Словарь с названиями функций
-name_functions = {
-    0: "Список программ",
-    1: "Монетка",
-    2: "Проверка на простое число",
-    3: "Калькулятор НОК и НОД",
-    4: "Текст в двоичный код",
-    5: "Калькулятор ИМТ",
-    6: "Таймер выклюючения",
-    7: "Генерация пароля",
-    8: "Проверка пароля",
-    9: "Генерация логина"
+programs = {
+    1: ("Монетка", functions.coin_flip),
+    2: ("Проверка на простое число", functions.Checking_a_prime_number),
+    3: ("Калькулятор НОК и НОД", functions.LCM_GCD),
+    4: ("Текст в двоичный код", functions.text_to_binary),
+    5: ("Калькулятор ИМТ", functions.BMI),
+    6: ("Таймер выключения", functions.shutdown_timer),
+    7: ("Генерация пароля", functions.generate_password),
+    8: ("Проверка пароля", functions.check_password),
+    9: ("Генерация логина", functions.generate_login),
+    10: ("Генератор случайных чисел", functions.random_number),
+    11: ("Калькулятор Hm", functions.torque_calculator),
+    12: ("Ip check", functions.ip_check),
 }
-
-kol_functions = len(name_functions)
 
 
 def show_main_instructions():
     print("\t* Нажмите Enter для закрытия окна")
-    print("\t* Введите 0 для просмотра программ")  # осталось только это
+    print("\t* Введите 0 для просмотра программ")
 
 
-print("Здраствуйте! Здесь вы найте очень много интересных, веселых и нужных программ!")
+def show_programs():
+    print("Для выбора программы введите соответствующее число")
+    print("0 - выйти в главное меню")
+    print("S - поиск программы 🔍")
+    for key, (name, _) in programs.items():
+        print(f"{key} - {name}")
+
+def search_program():
+    print("Введите название программы (или часть названия):")
+    query = input("#$ ").strip().lower()
+    if not query:
+        print("Поиск отменён")
+        return
+    found = False
+    for key, (name, _) in programs.items():
+        if query in name.lower():
+            print(f"{key} - {name}")
+            found = True
+    if not found:
+        print("Ничего не найдено ❌")
+
+
+print("Здравствуйте! Здесь вы найдёте много интересных программ!")
 show_main_instructions()
 
 while True:
     i = input("#$ ")
     if i == "":
         break
-    try:
-        i = int(i)
-    except ValueError:
-        print("Введите корректное число!")
-        continue
 
-    if i == 0:
-        # Меню просмотра списка программ
+    if i == "0":  # меню программ
         while True:
-            print("Для выбора программы введите соответствующее число")
-            print("0 - выйти в главное меню")
-            for key in name_functions:
-                if key != 0:
-                    print(f"{key} - {name_functions[key]}")
-            choice = input("#$ ")
+            show_programs()
+            choice = input("#$ ").strip()
+
             if choice == "":
                 break
-            try:
-                choice = int(choice)
-            except ValueError:
-                print("Введите корректное число!")
+            if choice == "0":
+                break
+            if choice.lower() == "s":
+                search_program()
                 continue
 
-            if choice == 0:
-                break
-            elif choice == 1:
-                functions.coin_flip()
-            elif choice == 2:
-                functions.Checking_a_prime_number()  # добавьте сюда вашу функцию
-            elif choice == 3:
-                functions.LCM_GCD()
-            elif choice == 4:
-                functions.text_to_binary()
-            elif choice == 5:
-                functions.BMI()
-            elif choice == 6:
-                functions.shutdown_timer()
-            elif choice == 7:
-                functions.generate_password()
-            elif choice == 8:
-                functions.check_password()
-            elif choice == 9:
-                functions.generate_login()
+            if choice.isdigit():
+                choice = int(choice)
+                if choice in programs:
+                    programs[choice][1]()  # вызов функции из словаря
+                else:
+                    print("Такой программы нет!🤷")
             else:
-                print("Такой программы нет!🤷")
-        show_main_instructions()  # показываем инструкции снова после выхода из подменю
-    elif i == 1:
-        functions.coin_flip()
-        show_main_instructions()  # показываем инструкции после выполнения функции
-    elif i == 2:
-        functions.Checking_a_prime_number()  # добавьте сюда вашу функцию
-        show_main_instructions()  # показываем инструкции после выполнения функции
-    elif i == 3:
-        functions.LCM_GCD()
+                print("Введите корректное число или S для поиска!")
+
         show_main_instructions()
-    elif i == 4:
-        functions.text_to_binary()
-        show_main_instructions()
-    elif i == 5:
-        functions.BMI()
-        show_main_instructions()
-    elif i == 6:
-        functions.shutdown_timer()
-        show_main_instructions()
-    elif i == 7:
-        functions.generate_password()
-        show_main_instructions()
-    elif i == 8:
-        functions.check_password()
-        show_main_instructions()
-    elif i == 9:
-        functions.generate_login()
+
+    elif i.isdigit():
+        i = int(i)
+        if i in programs:
+            programs[i][1]()  # вызов функции напрямую
+        else:
+            print("Такой программы нет!🤷")
         show_main_instructions()
     else:
-        print("Такой программы нет!🤷")
-        show_main_instructions()  # показываем инструкции после ошибки
+        print("Введите корректное число!")
+        show_main_instructions()
